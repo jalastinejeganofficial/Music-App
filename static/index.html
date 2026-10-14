@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Spotify — Tamil Music & Playlists</title>
+  
+  <!-- Spotify Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%231db954'/><path d='M25 40 Q50 30 75 40 M28 52 Q50 43 72 52 M32 64 Q50 56 68 64' stroke='%23121212' stroke-width='7' stroke-linecap='round' fill='none'/></svg>">
+</head>
+<body>
+
+  <!-- Ambient Blurred Backdrop -->
+  <div class="ambient-backdrop" id="ambientBackdrop"></div>
+
+  <!-- Mobile Viewport Shell (Locked to mobile width) -->
+  <div class="mobile-frame">
+
+    <!-- Scrollable Content Container -->
+    <div class="mobile-content" id="mobileContent">
+
+      <!-- ================= 1. SEARCH VIEW ================= -->
+      <section class="view-screen" id="view-search">
+        <div class="spotify-header">
+          <h1 class="spotify-heading">Search</h1>
+        </div>
+
+        <!-- Sticky Search Input Box -->
+        <div class="search-box-wrap">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" class="search-input" id="searchInput" placeholder="What do you want to listen to?">
+          <button class="search-clear" id="searchClearBtn">✕</button>
+        </div>
+
+        <!-- Search Results (Shown when typing) -->
+        <div id="searchResultsSection" style="display: none;">
+          <div class="section-label">Songs & Soundtracks</div>
+          <div class="track-list" id="searchResultsList">
+            <!-- Search Results Populated Dynamically -->
+          </div>
+        </div>
+
+        <!-- Default Discovery (Shown when search is empty) -->
+        <div id="searchDiscoverySection">
+          <div class="section-label">Trending Releases</div>
+          <div class="albums-scroll-grid" id="discoveryAlbumsGrid">
+            <!-- Scraped trending albums populated here -->
+          </div>
+
+          <div class="section-label" style="margin-top: 24px;">Browse Categories</div>
+          <div class="browse-categories-grid">
+            <div class="category-card" data-query="2026" style="background: linear-gradient(135deg, #e13300, #ff6437);">
+              <span>2026 Releases</span>
+            </div>
+            <div class="category-card" data-query="Anirudh" style="background: linear-gradient(135deg, #8400e7, #b24bf3);">
+              <span>Anirudh Hits</span>
+            </div>
+            <div class="category-card" data-query="A.R. Rahman" style="background: linear-gradient(135deg, #1e3264, #395eb8);">
+              <span>A.R. Rahman</span>
+            </div>
+            <div class="category-card" data-query="Yuvan" style="background: linear-gradient(135deg, #e91429, #ff5768);">
+              <span>Yuvan Drug Songs</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. YOUR LIBRARY (PLAYLISTS) VIEW ================= -->
+      <section class="view-screen" id="view-library" style="display: none;">
+        <div class="spotify-header flex-between">
+          <h1 class="spotify-heading">Your Library</h1>
+          <button class="btn-create-playlist" id="btnOpenCreatePlaylist" title="Create Playlist">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+
+        <div class="filter-pills">
+          <div class="pill active">Playlists</div>
+          <div class="pill" id="pillFavCount">0 Songs</div>
+        </div>
+
+        <!-- Playlists List -->
+        <div class="playlists-container" id="playlistsList">
+          <!-- Populated from localStorage -->
+        </div>
+      </section>
+
+      <!-- ================= 3. PLAYLIST DETAIL VIEW ================= -->
+      <section class="view-screen" id="view-playlist-detail" style="display: none;">
+        <div class="top-nav-bar">
+          <button class="nav-back-btn" id="btnBackFromPlaylist">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="nav-more-btn" id="btnDeletePlaylist" title="Delete Playlist">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+
+        <div class="playlist-header-center">
+          <div class="playlist-cover-wrap">
+            <img src="" alt="Cover" class="playlist-cover-lg" id="plDetailCover">
+          </div>
+          <h2 class="playlist-title-lg" id="plDetailTitle">Playlist Name</h2>
+          <div class="playlist-desc" id="plDetailDesc">Created by You</div>
+          <div class="playlist-meta-count" id="plDetailCount">0 songs</div>
+        </div>
+
+        <div class="playlist-actions-row">
+          <button class="spotify-play-circle" id="plPlayAllBtn" title="Play Playlist">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+          </button>
+          <button class="spotify-action-icon" id="plShuffleBtn" title="Shuffle Playlist">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+          </button>
+        </div>
+
+        <!-- Tracks inside Playlist -->
+        <div class="track-list" id="plTracksList">
+          <!-- Populated from playlist tracks -->
+        </div>
+      </section>
+
+      <!-- ================= 4. ALBUM / MOVIE DETAIL VIEW ================= -->
+      <section class="view-screen" id="view-album-detail" style="display: none;">
+        <div class="top-nav-bar">
+          <button class="nav-back-btn" id="btnBackFromAlbum">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+        </div>
+
+        <div class="playlist-header-center">
+          <div class="playlist-cover-wrap">
+            <img src="" alt="Album Cover" class="playlist-cover-lg" id="albumDetailCover">
+          </div>
+          <h2 class="playlist-title-lg" id="albumDetailTitle">Movie Title</h2>
+          <div class="playlist-desc" id="albumDetailMeta">Starring & Music Composer</div>
+          <div class="playlist-meta-count" id="albumDetailCount">0 songs</div>
+        </div>
+
+        <div class="playlist-actions-row">
+          <button class="spotify-play-circle" id="albumPlayAllBtn" title="Play Album">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+          </button>
+        </div>
+
+        <!-- Album Tracks List -->
+        <div class="track-list" id="albumTracksList">
+          <!-- Populated from MassTamilan album tracks -->
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ================= FLOATING MINI PLAYER ================= -->
+    <div class="mini-player" id="miniPlayer" style="display: none;">
+      <!-- Progress Bar line -->
+      <div class="mini-progress-track">
+        <div class="mini-progress-bar" id="miniProgressBar"></div>
+      </div>
+
+      <div class="mini-left" id="miniPlayerExpandZone">
+        <img src="" alt="Thumbnail" class="mini-artwork" id="miniArtwork">
+        <div class="mini-meta">
+          <div class="mini-title" id="miniTitle">Song Title</div>
+          <div class="mini-artist" id="miniArtist">Artist Name</div>
+        </div>
+      </div>
+
+      <div class="mini-right">
+        <button class="mini-btn-like" id="miniLikeBtn" title="Like">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b3b3b3" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+        </button>
+        <button class="mini-btn-play" id="miniPlayPauseBtn" title="Play/Pause">
+          <svg id="miniIconPlay" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+          <svg id="miniIconPause" style="display:none;" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= SPOTIFY BOTTOM NAVIGATION BAR ================= -->
+    <nav class="bottom-nav">
+      <button class="nav-tab active" data-nav="search">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>Search</span>
+      </button>
+      <button class="nav-tab" data-nav="library">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 6 4 14"></path><path d="M12 6v14"></path><path d="M8 8v12"></path><path d="M4 4v16"></path></svg>
+        <span>Your Library</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ================= FULLSCREEN SPOTIFY NOW PLAYING MODAL ================= -->
+  <div class="fullscreen-player" id="fullscreenPlayer">
+    <!-- Top Bar -->
+    <div class="fs-header">
+      <button class="fs-chevron-btn" id="btnCloseFullscreen" title="Collapse">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="fs-playing-from">
+        <span class="fs-sub-label">PLAYING FROM</span>
+        <span class="fs-main-label" id="fsPlayingFromLabel">SPOTIFY TAMIL</span>
+      </div>
+      <button class="fs-more-btn" id="fsAddToPlaylistBtn" title="Add to Playlist">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </button>
+    </div>
+
+    <!-- Giant Artwork -->
+    <div class="fs-artwork-container">
+      <img src="" alt="Album Artwork" class="fs-artwork-img" id="fsArtwork">
+    </div>
+
+    <!-- Title & Like Heart -->
+    <div class="fs-track-info-row">
+      <div class="fs-track-texts">
+        <h2 class="fs-track-title" id="fsTitle">Song Title</h2>
+        <p class="fs-track-artist" id="fsArtist">Artist Name</p>
+      </div>
+      <button class="fs-like-heart" id="fsLikeBtn" title="Like">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#b3b3b3" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+      </button>
+    </div>
+
+    <!-- Spotify Scrubber Seekbar -->
+    <div class="fs-scrubber-wrap">
+      <div class="fs-scrubber-track" id="fsScrubberTrack">
+        <div class="fs-scrubber-progress" id="fsScrubberProgress"></div>
+        <div class="fs-scrubber-thumb" id="fsScrubberThumb"></div>
+      </div>
+      <div class="fs-time-row">
+        <span id="fsTimeCurrent">0:00</span>
+        <span id="fsTimeRemaining">0:00</span>
+      </div>
+    </div>
+
+    <!-- Main Playback Controls Row -->
+    <div class="fs-controls-row">
+      <button class="fs-ctrl-btn" id="fsShuffleBtn" title="Shuffle">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+      </button>
+
+      <button class="fs-ctrl-btn" id="fsPrevBtn" title="Previous">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="3"></line></svg>
+      </button>
+
+      <button class="fs-ctrl-play" id="fsPlayPauseBtn" title="Play/Pause">
+        <svg id="fsIconPlay" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+        <svg id="fsIconPause" style="display:none;" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+      </button>
+
+      <button class="fs-ctrl-btn" id="fsNextBtn" title="Next">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="3"></line></svg>
+      </button>
+
+      <!-- Repeat & Song Loop button -->
+      <button class="fs-ctrl-btn position-relative" id="fsRepeatBtn" title="Loop & Repeat">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+        <span class="repeat-badge-one" id="repeatBadgeOne" style="display:none;">1</span>
+      </button>
+    </div>
+
+    <!-- Extra Action Row (Download, Lyrics, Direct Loop Toggle) -->
+    <div class="fs-bottom-actions">
+      <button class="fs-action-pill" id="fsToggleLoopSingleBtn" title="Loop this song repeatedly">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+        <span>Loop Song</span>
+      </button>
+      <button class="fs-action-pill" id="fsDownloadBtn" title="Download 320kbps MP3">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>320k MP3</span>
+      </button>
+      <button class="fs-action-pill" id="fsLyricsBtn" title="View Lyrics">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Lyrics</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= SLIDE-UP MODAL: ADD TO PLAYLIST ================= -->
+  <div class="bottom-sheet-backdrop" id="sheetBackdrop"></div>
+
+  <div class="bottom-sheet" id="addToPlaylistSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Add to Playlist</h3>
+      <button class="sheet-close" id="btnCloseSheet">✕</button>
+    </div>
+    
+    <!-- Quick New Playlist Button inside sheet -->
+    <div class="sheet-create-row" id="sheetNewPlaylistBtn">
+      <div class="sheet-create-icon">+</div>
+      <div class="sheet-create-text">New Playlist</div>
+    </div>
+
+    <div class="sheet-playlists-list" id="sheetPlaylistsList">
+      <!-- User's playlists rendered here -->
+    </div>
+  </div>
+
+  <!-- ================= DIALOG: CREATE NEW PLAYLIST ================= -->
+  <div class="dialog-overlay" id="dialogCreatePlaylist">
+    <div class="dialog-card">
+      <h2 class="dialog-title">Give your playlist a name</h2>
+      <input type="text" class="dialog-input" id="newPlaylistInput" placeholder="My Playlist #1" autofocus>
+      <div class="dialog-actions">
+        <button class="dialog-btn-cancel" id="btnCancelCreatePlaylist">CANCEL</button>
+        <button class="dialog-btn-create" id="btnConfirmCreatePlaylist">CREATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SLIDE-UP LYRICS SHEET ================= -->
+  <div class="bottom-sheet" id="lyricsSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title" id="lyricsTitle">Lyrics</h3>
+      <button class="sheet-close" id="btnCloseLyrics">✕</button>
+    </div>
+    <div class="lyrics-scroll-body" id="lyricsBody">
+      Loading lyrics...
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="spotify-toast" id="spotifyToast"></div>
+
+  <!-- Native Hidden Audio -->
+  <audio id="nativeAudio" preload="auto"></audio>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
